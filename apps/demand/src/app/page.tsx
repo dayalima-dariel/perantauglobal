@@ -7,7 +7,7 @@ import { articles } from "@/lib/articles";
 import { waLink } from "@/lib/site-config";
 
 export default function HomePage() {
-  const latestArticles = [...articles].sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 4);
+  const latestArticles = [...articles].sort((a, b) => Date.parse(b.publishedAt ?? "") - Date.parse(a.publishedAt ?? "")).slice(0, 4);
 
   return (
     <main className="corp">
@@ -25,7 +25,7 @@ export default function HomePage() {
 
       <section className="corp-regions" id="regions"><div className="corp-regions-title"><p className="corp-kicker">MARKET CONVERSATIONS</p><h2>One Indonesia talent partner.<br /><em>Three market conversations.</em></h2></div><div className="region-cards"><Link href="/en/saudi-gcc" className="region-card market-card-gcc"><h3>Saudi Arabia<br />&amp; GCC</h3><span>Learn more <b>→</b></span></Link><Link href="/europe" className="region-card market-card-europe"><h3>Europe</h3><span>Learn more <b>→</b></span></Link><Link href="/japan" className="region-card market-card-japan"><h3>Japan</h3><span>Learn more <b>→</b></span></Link></div></section>
 
-      <section className="corp-home-insights"><div className="corp-insights-intro"><p className="corp-kicker">ARTICLES</p><h2>Perspectives on people<br />and <em>global work.</em></h2></div><div className="corp-home-insight-list">{latestArticles.map((article) => <article key={article.slug}><Link className="corp-home-insight-image" href={`/articles/${article.slug}`} aria-label={`Read ${article.title}`}><Image src={article.cover} alt="" fill sizes="(max-width: 800px) 100vw, 23vw" /></Link><div className="corp-home-insight-body"><time dateTime={new Date(article.date).toISOString().slice(0, 10)}>Published {article.date}</time><small>{article.category}</small><p>{article.title}</p><b><Link href={`/articles/${article.slug}`}>Read article</Link></b></div></article>)}</div><Link className="corp-insights-cta" href="/articles">View all articles</Link></section>
+      {latestArticles.length > 0 && <section className="corp-home-insights"><div className="corp-insights-intro"><p className="corp-kicker">ARTICLES</p><h2>Perspectives on people<br />and <em>global work.</em></h2></div><div className="corp-home-insight-list">{latestArticles.map((article) => <article key={article.id}><Link className="corp-home-insight-image" href={`/articles/${article.slug}`} aria-label={`Read ${article.title}`}><Image src={article.cover} alt="" fill sizes="(max-width: 800px) 100vw, 23vw" /></Link><div className="corp-home-insight-body">{article.publishedAt && <time>{article.publishedAt}</time>}<small>{article.category}</small><p>{article.title}</p><b><Link href={`/articles/${article.slug}`}>Read article</Link></b></div></article>)}</div><Link className="corp-insights-cta" href="/articles">View all articles</Link></section>}
 
       <section className="corp-contact" id="contact"><div className="corp-contact-decoration" aria-hidden="true"><span>ROLE FIT</span><i /><span>MARKET ROUTE</span><i /><span>AFTERCARE</span></div><p className="corp-kicker">EMPLOYER INQUIRY</p><h2>Ready To Build A Clearer<br /><em>Global Workforce Route?</em></h2><p className="corp-contact-intro">Start with the business need. DTG will help shape the right conversation around role fit, readiness, and a managed route forward.</p><a href={waLink("Hello DTG, I would like to discuss an employer workforce need.")} target="_blank" rel="noreferrer" className="corp-button">Discuss your needs</a></section>
 
@@ -33,4 +33,5 @@ export default function HomePage() {
     </main>
   );
 }
+
 
