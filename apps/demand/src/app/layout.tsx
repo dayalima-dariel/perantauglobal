@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Fraunces, IBM_Plex_Mono, Montserrat } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
+import { headers } from "next/headers";
 import "./globals.css";
 import { SITE, CONTACT, CREDENTIALS } from "@/lib/site-config";
+import { isLocale } from "@/lib/locales";
+import { LocaleRuntime } from "@/components/corporate/LocaleRuntime";
 
 // Gate indexing until the public launch is signed off (see robots.ts).
 const allowIndex = process.env.NEXT_PUBLIC_ALLOW_INDEX === "true";
@@ -82,17 +85,22 @@ const orgJsonLd = {
     "@type": "ContactPoint",
     contactType: "sales",
     telephone: `+${CONTACT.whatsappDigits}`,
-    availableLanguage: ["en", "id"],
+    availableLanguage: ["en", "id", "ar"],
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const requestHeaders = await headers();
+  const headerLocale = requestHeaders.get("x-dtg-locale") ?? "en";
+  const locale = isLocale(headerLocale) ? headerLocale : "en";
   return (
     <html
-      lang="en"
+      lang={locale}
+      dir={locale === "ar" ? "rtl" : "ltr"}
       className={`${plusJakarta.variable} ${fraunces.variable} ${ibmPlexMono.variable} ${montserrat.variable}`}
     >
       <body className="antialiased">
+        <LocaleRuntime />
         {validGtmId ? (
           <>
             <Script
@@ -128,3 +136,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

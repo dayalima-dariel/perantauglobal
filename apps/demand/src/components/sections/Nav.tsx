@@ -5,22 +5,20 @@ import { LogoMark } from "@/components/LogoMark";
 import { MobileMenu, type MobileMenuCopy } from "@/components/MobileMenu";
 
 type Market = "gcc" | "europe" | "japan";
-type Locale = "en" | "id" | "ar" | "bg" | "ja";
+type Locale = "en" | "id" | "ar";
 
 type MarketLocale = { value: Locale; label: string; flagSrc: string; country: string };
 
 const MARKET_LOCALES: Record<Market, MarketLocale[]> = {
   gcc: [{ value: "en", label: "English", flagSrc: "/images/flag-us.svg", country: "United States" }, { value: "id", label: "Indonesia", flagSrc: "/images/flag-id.svg", country: "Indonesia" }, { value: "ar", label: "العربية", flagSrc: "/images/flag-sa.svg", country: "Saudi Arabia" }],
-  europe: [{ value: "en", label: "English", flagSrc: "/images/flag-us.svg", country: "United States" }, { value: "id", label: "Indonesia", flagSrc: "/images/flag-id.svg", country: "Indonesia" }, { value: "bg", label: "Български", flagSrc: "/images/flag-bg.svg", country: "Bulgaria" }],
-  japan: [{ value: "en", label: "English", flagSrc: "/images/flag-us.svg", country: "United States" }, { value: "id", label: "Indonesia", flagSrc: "/images/flag-id.svg", country: "Indonesia" }, { value: "ja", label: "日本語", flagSrc: "/images/flag-jp.svg", country: "Japan" }],
+  europe: [{ value: "en", label: "English", flagSrc: "/images/flag-us.svg", country: "United States" }, { value: "id", label: "Indonesia", flagSrc: "/images/flag-id.svg", country: "Indonesia" }, { value: "ar", label: "العربية", flagSrc: "/images/flag-sa.svg", country: "Saudi Arabia" }],
+  japan: [{ value: "en", label: "English", flagSrc: "/images/flag-us.svg", country: "United States" }, { value: "id", label: "Indonesia", flagSrc: "/images/flag-id.svg", country: "Indonesia" }, { value: "ar", label: "العربية", flagSrc: "/images/flag-sa.svg", country: "Saudi Arabia" }],
 };
 
 const NAV_COPY: Record<Locale, { home: string; why: string; pool: string; sectors: string; process: string; credentials: string; faq: string; request: string; menu: string; openMenu: string; closeMenu: string }> = {
   en: { home: "Home", why: "Why DTG", pool: "Talent Pool", sectors: "Sectors", process: "Process", credentials: "Credentials", faq: "FAQ", request: "Request Talent", menu: "MENU", openMenu: "Open menu", closeMenu: "Close menu" },
   id: { home: "Beranda", why: "Mengapa DTG", pool: "Talenta", sectors: "Sektor", process: "Proses", credentials: "Kredensial", faq: "Pertanyaan", request: "Diskusikan Kebutuhan", menu: "MENU", openMenu: "Buka menu", closeMenu: "Tutup menu" },
   ar: { home: "الرئيسية", why: "لماذا DTG", pool: "المواهب", sectors: "القطاعات", process: "العملية", credentials: "الاعتمادات", faq: "الأسئلة الشائعة", request: "اطلب المواهب", menu: "القائمة", openMenu: "فتح القائمة", closeMenu: "إغلاق القائمة" },
-  bg: { home: "Начало", why: "Защо DTG", pool: "Таланти", sectors: "Сектори", process: "Процес", credentials: "Акредитации", faq: "Въпроси", request: "Заявете таланти", menu: "МЕНЮ", openMenu: "Отвори менюто", closeMenu: "Затвори менюто" },
-  ja: { home: "ホーム", why: "DTGについて", pool: "人材", sectors: "分野", process: "プロセス", credentials: "認定", faq: "よくある質問", request: "人材を相談する", menu: "メニュー", openMenu: "メニューを開く", closeMenu: "メニューを閉じる" },
 };
 
 export function Nav({ market = "gcc", initialLocale = "en" }: { market?: Market; initialLocale?: Locale }) {
@@ -60,45 +58,18 @@ export function Nav({ market = "gcc", initialLocale = "en" }: { market?: Market;
       document.documentElement.dir = initialLocale === "ar" ? "rtl" : "ltr";
       return;
     }
-    const translatedLocale = new URLSearchParams(window.location.search).get("_x_tr_tl") as Locale | null;
-    if (translatedLocale && locales.some(({ value }) => value === translatedLocale)) {
-      setLocale(translatedLocale);
-      document.documentElement.lang = translatedLocale;
-      document.documentElement.dir = translatedLocale === "ar" ? "rtl" : "ltr";
-      return;
-    }
-    const saved = window.localStorage.getItem(`dtg-market-language-${market}`) as Locale | null;
-    if (saved && locales.some(({ value }) => value === saved)) {
-      setLocale(saved);
-      document.documentElement.lang = saved;
-      document.documentElement.dir = saved === "ar" ? "rtl" : "ltr";
-    }
+    const routeLocale = window.location.pathname.split("/")[1] as Locale;
+    const selected = locales.some(({ value }) => value === routeLocale) ? routeLocale : "en";
+    setLocale(selected);
+    document.documentElement.lang = selected;
+    document.documentElement.dir = selected === "ar" ? "rtl" : "ltr";
   }, [initialLocale, market, locales]);
 
   const chooseLocale = (value: Locale) => {
     setLocale(value);
     setLanguageOpen(false);
-    window.localStorage.setItem(`dtg-market-language-${market}`, value);
-    document.documentElement.lang = value;
-    document.documentElement.dir = value === "ar" ? "rtl" : "ltr";
-    if (market === "gcc" && value === "id") {
-      window.location.assign("/id/saudi-gcc");
-      return;
-    }
-    if (market === "gcc" && value === "ar") {
-      window.location.assign("/ar/saudi-gcc");
-      return;
-    }
-    if (market === "gcc" && value === "en") {
-      window.location.assign("/en/saudi-gcc");
-      return;
-    }
-    if (value === "en") {
-      window.location.assign(`https://www.dayatalentaglobal.com${window.location.pathname}`);
-      return;
-    }
-    const params = new URLSearchParams({ _x_tr_sl: "en", _x_tr_tl: value, _x_tr_hl: value, _x_tr_pto: "wapp" });
-    window.location.assign(`https://www-dayatalentaglobal-com.translate.goog${window.location.pathname}?${params.toString()}`);
+    const path = window.location.pathname.replace(/^\/(?:en|id|ar)(?=\/|$)/, "") || "/";
+    window.location.assign(path === "/" ? `/${value}` : `/${value}${path}`);
   };
 
   const linkColor = solid ? "#413E33" : "#E4E0CC";
@@ -183,3 +154,4 @@ export function Nav({ market = "gcc", initialLocale = "en" }: { market?: Market;
     </nav>
   );
 }
+
