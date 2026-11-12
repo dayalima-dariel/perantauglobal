@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 /**
  * apps/demand — Daya Talenta Global demand-side marketing site
- * (dayatalentaglobal.com). English-only, no i18n, no auth, no middleware.
+ * (dayatalentaglobal.com). Language-prefixed public routes are served for
+ * English, Indonesian, and Arabic; Proxy normalizes legacy URLs to /en.
  *
  * Security headers mirror the other apps. CSP starts in Report-Only so design
  * iteration is never silently blocked; flip CSP_ENFORCE=true before the
@@ -53,3 +54,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
